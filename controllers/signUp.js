@@ -1,3 +1,7 @@
 module.exports = (req, res) => {
-  res.send("");
+  const { username, password } = req.body;
+
+  if (!username || !password) {
+    return res.status(401).send("Bad request");
+  }
 };
