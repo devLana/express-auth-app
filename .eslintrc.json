@@ -16,6 +16,7 @@
     "arrow-parens": [1, "as-needed"],
     "consistent-return": 1,
     "arrow-body-style": 0,
-    "semi": 1
+    "semi": 1,
+    "indent": [1, 2]
   }
 }
