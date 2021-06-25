@@ -6,7 +6,6 @@ const port = process.env.PORT || 3030;
 const router = require("./routes");
 
 app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
 
 app.use("/api", router);
 
