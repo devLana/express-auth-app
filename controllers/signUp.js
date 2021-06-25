@@ -1,5 +1,4 @@
-const readFromDB = require("../utils/db/readFromDB");
-const writeToDB = require("../utils/db/writeToDB");
+const DB = require("../utils/db");
 const getId = require("../utils/getId");
 const generateToken = require("../utils/generateToken");
 
@@ -11,7 +10,7 @@ module.exports = async (req, res) => {
   }
 
   try {
-    const db = await readFromDB();
+    const db = await DB.readFromDB();
     const data = JSON.parse(db);
 
     const userExists = data.some(({ username: user }) => {
@@ -29,7 +28,7 @@ module.exports = async (req, res) => {
     const newUser = { id, username, password, token };
     const newData = [...data, newUser];
 
-    await writeToDB(JSON.stringify(newData));
+    await DB.writeToDB(JSON.stringify(newData));
 
     delete newUser.id;
     delete newUser.password;
