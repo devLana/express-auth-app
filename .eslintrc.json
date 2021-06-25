@@ -17,6 +17,7 @@
     "consistent-return": 1,
     "arrow-body-style": 0,
     "semi": 1,
-    "indent": [1, 2]
+    "indent": [1, 2],
+    "object-curly-newline": 0
   }
 }
