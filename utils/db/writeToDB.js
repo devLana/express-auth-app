@@ -7,6 +7,7 @@ module.exports = data => {
 
     try {
       fs.writeFileSync(databaseFile, data, "utf8");
+      resolve();
     } catch (err) {
       reject(err);
     }
