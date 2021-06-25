@@ -6,8 +6,8 @@ module.exports = data => {
     const databaseFile = path.resolve(process.cwd(), "database", "index.json");
 
     try {
-      const db = fs.writeFileSync(databaseFile, data, "utf8");
-      resolve(db);
+      fs.writeFileSync(databaseFile, data, "utf8");
+      resolve("some");
     } catch (err) {
       reject(err);
     }
