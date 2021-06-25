@@ -6,7 +6,9 @@ module.exports = async (req, res) => {
   const { username, password } = req.body;
 
   if (!username.trim() || !password) {
-    res.status(400).send({ message: "Bad request. Check your input values" });
+    return res
+      .status(400)
+      .send({ message: "Bad request. Check your input values" });
   }
 
   try {
@@ -18,7 +20,7 @@ module.exports = async (req, res) => {
     });
 
     if (userExists) {
-      res
+      return res
         .status(403)
         .json({ message: "This username has been taken. Try another one" });
     }
@@ -33,10 +35,10 @@ module.exports = async (req, res) => {
     delete newUser.id;
     delete newUser.password;
 
-    res
+    return res
       .status(201)
       .json({ message: `New user "${username}" created`, user: newUser });
   } catch (err) {
-    res.status(500).json({ message: "Server Error" });
+    return res.status(500).json({ message: "Server Error" });
   }
 };
