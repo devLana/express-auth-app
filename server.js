@@ -15,6 +15,7 @@ app.all("*", (req, res, next) => {
   next(err);
 });
 
+// eslint-disable-next-line no-unused-vars
 app.use((err, req, res, next) => {
   if (!err.statusCode) {
     return res.status(500).json({ message: "Server error" });
