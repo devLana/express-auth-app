@@ -6,11 +6,6 @@ const error = require("../utils/Error");
 module.exports = async (req, res, next) => {
   const { username, password } = req.body;
 
-  if (!username.trim() || !password) {
-    const err = error("Bad request. Check your input values", 400);
-    return next(err);
-  }
-
   try {
     const db = await DB.readFromDB();
     const data = JSON.parse(db);
@@ -21,7 +16,7 @@ module.exports = async (req, res, next) => {
 
     if (userExists) {
       const err = error("This username has been taken. Try another one", 403);
-      return next(err);
+      throw err;
     }
 
     const id = getId(data);
