@@ -16,7 +16,7 @@ module.exports = async (req, res, next) => {
       const err = error("Invalid user & password combination", 403);
       throw err;
     } else if (userExists && userExists.token) {
-      const err = error(`User ${username} is already logged in`, 403);
+      const err = error(`User "${username}" is already logged in`, 403);
       throw err;
     }
 
