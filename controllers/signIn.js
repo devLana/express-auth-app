@@ -22,8 +22,8 @@ module.exports = async (req, res, next) => {
     await DB.writeToDB(JSON.stringify(newData));
 
     return res
-      .status(201)
-      .json({ message: `Login for "${username}" verified`, user });
+      .status(200)
+      .json({ message: `Login for "${username}" verified`, status: 200, user });
   } catch (err) {
     return next(err);
   }

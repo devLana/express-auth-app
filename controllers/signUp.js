@@ -31,7 +31,11 @@ module.exports = async (req, res, next) => {
 
     return res
       .status(201)
-      .json({ message: `New user "${username}" created`, user: newUser });
+      .json({
+        message: `New user "${username}" created`,
+        status: 201,
+        user: newUser,
+      });
   } catch (err) {
     return next(err);
   }

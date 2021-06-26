@@ -18,10 +18,12 @@ app.all("*", (req, res, next) => {
 // eslint-disable-next-line no-unused-vars
 app.use((err, req, res, next) => {
   if (!err.statusCode) {
-    return res.status(500).json({ message: "Server error" });
+    return res.status(500).json({ message: "Server error", status: 500 });
   }
 
-  return res.status(err.statusCode).json({ message: err.message });
+  return res
+    .status(err.statusCode)
+    .json({ message: err.message, status: err.statusCode });
 });
 
 app.listen(port, () => {
