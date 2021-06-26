@@ -17,7 +17,7 @@ module.exports = (req, res, next) => {
     return badRequest(next, message);
   }
 
-  if (!username || !username.trim() || !token) {
+  if (!username || !username.trim() || !token || !token.trim()) {
     return badRequest(next, message);
   }
 
