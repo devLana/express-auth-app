@@ -1,14 +1,14 @@
 const DB = require("../utils/db");
 const getId = require("../utils/getId");
 const generateToken = require("../utils/generateToken");
+const error = require("../utils/Error");
 
-module.exports = async (req, res) => {
+module.exports = async (req, res, next) => {
   const { username, password } = req.body;
 
   if (!username.trim() || !password) {
-    return res
-      .status(400)
-      .send({ message: "Bad request. Check your input values" });
+    const err = error("Bad request. Check your input values", 400);
+    return next(err);
   }
 
   try {
@@ -20,9 +20,8 @@ module.exports = async (req, res) => {
     });
 
     if (userExists) {
-      return res
-        .status(403)
-        .json({ message: "This username has been taken. Try another one" });
+      const err = error("This username has been taken. Try another one", 403);
+      return next(err);
     }
 
     const id = getId(data);
@@ -39,6 +38,6 @@ module.exports = async (req, res) => {
       .status(201)
       .json({ message: `New user "${username}" created`, user: newUser });
   } catch (err) {
-    return res.status(500).json({ message: "Server Error" });
+    return next(err);
   }
 };
