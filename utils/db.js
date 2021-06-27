@@ -3,7 +3,10 @@ const fs = require("fs");
 
 class DB {
   constructor() {
-    this.databaseFile = path.resolve(process.cwd(), "database", "index.json");
+    this.databaseFile =
+      process.env.NODE_ENV === "production"
+        ? path.resolve(process.cwd(), "database", "prod.json")
+        : path.resolve(process.cwd(), "database", "dev.json");
   }
 
   readFromDB = () => {
