@@ -16,7 +16,7 @@ app.use(
       "http://localhost:9090",
       "https://devlana-auth-app.netlify.app",
     ],
-    methods: ["GET,POST"],
+    methods: ["GET", "POST"],
   })
 );
 app.use(helmet());
