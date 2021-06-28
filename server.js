@@ -14,7 +14,7 @@ app.use(
     origin: [
       "http://localhost:9000",
       "http://localhost:9090",
-      "https://basic-auth-api.herokuapp.com",
+      "https://devlana-auth-app.netlify.app",
     ],
     methods: ["GET,POST"],
   })
