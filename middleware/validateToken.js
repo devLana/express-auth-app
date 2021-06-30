@@ -6,7 +6,7 @@ module.exports = (req, res, next) => {
   const message = "Bad request";
 
   if (!token || !token.trim() || token.length !== 45) {
-    return badRequest(next, `${message}. Invalid token`);
+    return badRequest(next, "Invalid token. Logging user out");
   }
 
   return next();
