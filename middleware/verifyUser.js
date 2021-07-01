@@ -15,8 +15,21 @@ module.exports = async (req, res, next) => {
     if (!userExists) {
       const err = error("Invalid user & password combination", 403);
       throw err;
-    } else if (userExists && userExists.token) {
-      const err = error(`User "${username}" is already logged in`, 403);
+    }
+
+    if (userExists && userExists.token) {
+      delete userExists.token;
+
+      const newData = data.map(item => {
+        if (item.id === userExists.id) {
+          return userExists;
+        }
+        return item;
+      });
+
+      await DB.writeToDB(JSON.stringify(newData));
+
+      const err = error(`Previous session has ended. Sign in again`, 403);
       throw err;
     }
 
