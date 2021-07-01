@@ -1,12 +1,11 @@
-const badRequest = require("../utils/badRequestError");
+const error = require("../utils/Error");
 
 module.exports = (req, res, next) => {
   const { token } = req.params;
 
-  const message = "Bad request";
-
   if (!token || !token.trim() || token.length !== 45) {
-    return badRequest(next, "Invalid token. Logging user out");
+    const err = error("Invalid token. Logging user out", 403);
+    throw err;
   }
 
   return next();
