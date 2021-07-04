@@ -13,7 +13,7 @@ module.exports = async (req, res, next) => {
     });
 
     if (!userExists) {
-      const err = error("Invalid user & password combination", 403);
+      const err = error("Invalid username & password combination", 403);
       throw err;
     }
 
@@ -29,7 +29,7 @@ module.exports = async (req, res, next) => {
 
       await DB.writeToDB(JSON.stringify(newData));
 
-      const err = error(`Previous session has ended. Sign in again`, 403);
+      const err = error("Previous session has ended. Sign in again", 403);
       throw err;
     }
 
