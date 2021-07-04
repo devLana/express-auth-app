@@ -40,6 +40,10 @@ app.use((err, req, res, next) => {
     .json({ message: err.message, status: err.statusCode });
 });
 
-app.listen(process.env.PORT, () => {
-  console.log(`server running on port ${process.env.PORT}`);
-});
+if (process.env.NODE_ENV !== "test") {
+  app.listen(process.env.PORT, () => {
+    console.log(`server running on port ${process.env.PORT}`);
+  });
+}
+
+module.exports = app;
