@@ -1,65 +1,43 @@
 const supertest = require("supertest");
 const server = require("../server");
 const DB = require("../utils/db");
+const resetDB = require("./helper");
 
 const request = supertest(server);
 
-afterAll(async () => {
-  const data = [{ id: 1, username: "Jack", password: "1234abc" }];
-  await DB.writeToDB(JSON.stringify(data));
+afterAll(() => {
+  resetDB();
 });
 
+const testRequest = async (body, status, errMessage) => {
+  const response = await request
+    .post("/api/signout")
+    .send(body)
+    .expect("Content-Type", /application\/json/);
+
+  expect(response.body.message).toBe(errMessage);
+  expect(response.body.status).toBe(status);
+};
+
 describe("POST /api/signout", () => {
-  test("sign out should fail on unknown fields", async () => {
+  test("sign out should fail on unknown fields", () => {
     const body = { name: "John", pass: "abcd" };
-
-    const response = await request
-      .post("/api/signout")
-      .send(body)
-      .expect(400)
-      .expect("Content-Type", /application\/json/);
-
-    expect(response.body.message).toBe("Bad request");
-    expect(response.body.status).toBe(400);
+    testRequest(body, 400, "Bad request");
   });
 
-  test("sign out should fail on invalid field types", async () => {
+  test("sign out should fail on invalid field types", () => {
     const body = { username: 1234, token: true };
-
-    const response = await request
-      .post("/api/signout")
-      .send(body)
-      .expect(400)
-      .expect("Content-Type", /application\/json/);
-
-    expect(response.body.message).toBe("Bad request");
-    expect(response.body.status).toBe(400);
+    testRequest(body, 400, "Bad request");
   });
 
-  test("sign out should fail on empty field types", async () => {
+  test("sign out should fail on empty field types", () => {
     const body = { username: "", token: "" };
-
-    const response = await request
-      .post("/api/signout")
-      .send(body)
-      .expect(400)
-      .expect("Content-Type", /application\/json/);
-
-    expect(response.body.message).toBe("Bad request");
-    expect(response.body.status).toBe(400);
+    testRequest(body, 400, "Bad request");
   });
 
-  test("sign out should fail on invalid user credentials", async () => {
+  test("sign out should fail on invalid user credentials", () => {
     const body = { username: "Jackson", token: "InvalidTestToken" };
-
-    const response = await request
-      .post("/api/signout")
-      .send(body)
-      .expect(403)
-      .expect("Content-Type", /application\/json/);
-
-    expect(response.body.message).toBe("Invalid user credentials");
-    expect(response.body.status).toBe(403);
+    testRequest(body, 403, "Invalid user credentials");
   });
 
   test("User token should be deleted on successful sign out", async () => {
@@ -73,7 +51,6 @@ describe("POST /api/signout", () => {
     const response = await request
       .post("/api/signout")
       .send(body)
-      .expect(200)
       .expect("Content-Type", /application\/json/);
 
     expect(response.body.message).toBe(`User "${data.username}" signed out`);
