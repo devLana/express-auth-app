@@ -1,91 +1,73 @@
 const supertest = require("supertest");
 const server = require("../server");
 const DB = require("../utils/db");
+const resetDB = require("./helper");
 
 const request = supertest(server);
 
-afterAll(async () => {
-  const data = [{ id: 1, username: "Jack", password: "1234abc" }];
-  await DB.writeToDB(JSON.stringify(data));
+afterEach(async () => {
+  resetDB();
 });
+
+const testRequest = ({ body, status, errMessage, done }) => {
+  request
+    .post("/api/signin")
+    .send(body)
+    .expect("Content-Type", /application\/json/)
+    .end((err, res) => {
+      if (err) {
+        return done(err);
+      }
+
+      expect(res.body.message).toBe(errMessage);
+      expect(res.body.status).toBe(status);
+      return done();
+    });
+};
 
 describe("POST /api/signin", () => {
   test("sign in should fail on unknown fields", done => {
     const body = { name: "John", pass: "abcd" };
 
-    request
-      .post("/api/signin")
-      .send(body)
-      .expect(400)
-      .expect("Content-Type", /application\/json/)
-      .end((err, res) => {
-        if (err) {
-          return done(err);
-        }
-
-        expect(res.body.message).toBe("Bad request. Check your input values");
-        expect(res.body.status).toBe(400);
-        return done();
-      });
+    testRequest({
+      body,
+      status: 400,
+      errMessage: "Bad request. Check your input values",
+      done,
+    });
   });
 
   test("sign in should fail on invalid field types", done => {
     const body = { username: 1234, password: true };
 
-    request
-      .post("/api/signin")
-      .send(body)
-      .expect(400)
-      .expect("Content-Type", /application\/json/)
-      .end((err, res) => {
-        if (err) {
-          return done(err);
-        }
-
-        expect(res.body.message).toBe("Bad request. Check your input values");
-        expect(res.body.status).toBe(400);
-        return done();
-      });
+    testRequest({
+      body,
+      status: 400,
+      errMessage: "Bad request. Check your input values",
+      done,
+    });
   });
 
   test("sign in should fail on empty field types", done => {
     const body = { username: "", password: "" };
 
-    request
-      .post("/api/signin")
-      .send(body)
-      .expect(400)
-      .expect("Content-Type", /application\/json/)
-      .end((err, res) => {
-        if (err) {
-          return done(err);
-        }
-
-        expect(res.body.message).toBe("Bad request. Check your input values");
-        expect(res.body.status).toBe(400);
-        return done();
-      });
+    testRequest({
+      body,
+      status: 400,
+      errMessage: "Bad request. Check your input values",
+      done,
+    });
   });
 
   test("sign in should fail if username and password don't match records", done => {
     const body = { username: "Jack", password: "abc1234" };
 
-    request
-      .post("/api/signin")
-      .send(body)
-      .expect(403)
-      .expect("Content-Type", /application\/json/)
-      .end((err, res) => {
-        if (err) {
-          return done(err);
-        }
-
-        expect(res.body.message).toBe(
-          "Invalid username & password combination"
-        );
-        expect(res.body.status).toBe(403);
-        return done();
-      });
+    testRequest({
+      body,
+      status: 403,
+      errMessage: "Invalid username & password combination",
+      done,
+    });
   });
 
   test("sign in should generate new token on successful sign in", done => {
@@ -94,7 +76,6 @@ describe("POST /api/signin", () => {
     request
       .post("/api/signin")
       .send(data)
-      .expect(200)
       .expect("Content-Type", /application\/json/)
       .end((err, res) => {
         if (err) {
@@ -131,18 +112,22 @@ describe("POST /api/signin", () => {
     request
       .post("/api/signin")
       .send(body)
-      .expect(403)
       .expect("Content-Type", /application\/json/)
       .end((err, res) => {
         if (err) {
           return done(err);
         }
 
-        expect(res.body.message).toBe(
-          "Previous session has ended. Sign in again"
-        );
-        expect(res.body.status).toBe(403);
+        expect(res.body.message).toBe(`Login for "${body.username}" verified`);
+        expect(res.body.status).toBe(200);
         return done();
       });
+
+    testRequest({
+      body,
+      status: 403,
+      errMessage: "Previous session has ended. Sign in again",
+      done,
+    });
   });
 });
