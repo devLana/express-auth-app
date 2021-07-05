@@ -1,91 +1,73 @@
 const supertest = require("supertest");
 const server = require("../server");
 const DB = require("../utils/db");
+const resetDB = require("./helper");
 
 const request = supertest(server);
 
-afterAll(async () => {
-  const data = [{ id: 1, username: "Jack", password: "1234abc" }];
-  await DB.writeToDB(JSON.stringify(data));
+afterAll(() => {
+  resetDB();
 });
+
+const testRequest = ({ body, status, errMessage, done }) => {
+  request
+    .post("/api/signup")
+    .send(body)
+    .expect("Content-Type", /application\/json/)
+    .end((err, res) => {
+      if (err) {
+        return done(err);
+      }
+
+      expect(res.body.message).toBe(errMessage);
+      expect(res.body.status).toBe(status);
+      return done();
+    });
+};
 
 describe("POST /api/signup", () => {
   test("sign up should fail on unknown fields", done => {
     const body = { name: "John", pass: "abcd" };
 
-    request
-      .post("/api/signup")
-      .send(body)
-      // .expect(400)
-      // .expect("Content-Type", /application\/json/)
-      .end((err, res) => {
-        if (err) {
-          return done(err);
-        }
-
-        expect(res.body.message).toBe("Bad request. Check your input values");
-        expect(res.body.status).toBe(400);
-        return done();
-      });
+    testRequest({
+      body,
+      status: 400,
+      errMessage: "Bad request. Check your input values",
+      done,
+    });
   });
 
   test("sign up should fail on invalid field types", done => {
     const body = { username: 1234, password: true };
 
-    request
-      .post("/api/signup")
-      .send(body)
-      // .expect(400)
-      // .expect("Content-Type", /application\/json/)
-      .end((err, res) => {
-        if (err) {
-          return done(err);
-        }
-
-        expect(res.body.message).toBe("Bad request. Check your input values");
-        expect(res.body.status).toBe(400);
-        return done();
-      });
+    testRequest({
+      body,
+      status: 400,
+      errMessage: "Bad request. Check your input values",
+      done,
+    });
   });
 
   test("sign up should fail on empty field types", done => {
     const body = { username: "", password: "" };
 
-    request
-      .post("/api/signup")
-      .send(body)
-      // .expect(400)
-      // .expect("Content-Type", /application\/json/)
-      .end((err, res) => {
-        if (err) {
-          return done(err);
-        }
-
-        expect(res.body.message).toBe("Bad request. Check your input values");
-        expect(res.body.status).toBe(400);
-        return done();
-      });
+    testRequest({
+      body,
+      status: 400,
+      errMessage: "Bad request. Check your input values",
+      done,
+    });
   });
 
   test("sign up should fail if username already exists", done => {
     const body = { username: "Jack", password: "1234abc" };
 
-    request
-      .post("/api/signup")
-      .send(body)
-      // .expect(403)
-      // .expect("Content-Type", /application\/json/)
-      .end((err, res) => {
-        if (err) {
-          return done(err);
-        }
-
-        expect(res.body.message).toBe(
-          "This username has been taken. Try another one"
-        );
-        expect(res.body.status).toBe(403);
-        return done();
-      });
+    testRequest({
+      body,
+      status: 403,
+      errMessage: "This username has been taken. Try another one",
+      done,
+    });
   });
 
   test("sign up should create new user with token and id fields", done => {
@@ -94,8 +76,6 @@ describe("POST /api/signup", () => {
     request
       .post("/api/signup")
       .send(data)
-      // .expect(403)
-      // .expect("Content-Type", /application\/json/)
       .end((err, res) => {
         if (err) {
           return done(err);
